@@ -38,4 +38,44 @@ SlashCmdList["BulkEditMacroTargets"] = function(msg)
         UpdateMacro(from, to, 121);
         print("Bulk Edit Macro Targets: Macros have been updated!");
     end
+
+    if msg == "" then
+        local UIConfig = CreateFrame("Frame", "BET_TargetFrame", UIParent, "EtherealFrameTemplate");
+
+        UIConfig:SetSize(300, 360);
+        UIConfig:SetPoint("CENTER", UIParent, "CENTER");
+        UIConfig:SetFrameLevel(100)
+
+        UIConfig.title = UIConfig:CreateFontString(nil, "OVERLAY");
+        UIConfig.title:SetFontObject("GameFontHighlight");
+        UIConfig.title:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", 5, 0);
+        UIConfig.title:SetText("Bulk Edit Target Options");
+
+        UIConfig.editInput1 = CreateFrame("EditBox", "FromInput", UIConfig, "InputBoxTemplate");
+        UIConfig.editInput1:SetPoint("LEFT", UIConfig, "TOP", -60, -100);
+        UIConfig.editInput1:SetWidth(180);
+        UIConfig.editInput1:SetHeight(400);
+        UIConfig.editInput1:SetMovable(false);
+        UIConfig.editInput1:SetAutoFocus(true);
+        UIConfig.editInput1:SetMaxLetters(100);
+
+        UIConfig.editInput2 = CreateFrame("EditBox", "ToInput", UIConfig, "InputBoxTemplate");
+        UIConfig.editInput2:SetPoint("LEFT", UIConfig,  "TOP", -60, -130);
+        UIConfig.editInput2:SetWidth(180);
+        UIConfig.editInput2:SetHeight(400);
+        UIConfig.editInput2:SetMovable(false);
+        UIConfig.editInput2:SetAutoFocus(false);
+        UIConfig.editInput2:SetMaxLetters(100);
+
+        UIConfig.saveButton = CreateFrame("Button", nil, UIConfig, "GameMenuButtonTemplate");
+        UIConfig.saveButton:SetPoint("CENTER", UIConfig, "Bottom", 0, 70);
+        UIConfig.saveButton:SetSize(70, 30);
+        UIConfig.saveButton:SetText("Save");
+        UIConfig.saveButton:SetNormalFontObject("GameFontNormalLarge");
+        UIConfig.saveButton:SetHighlightFontObject("GameFontHighlightLarge");
+        UIConfig.saveButton:SetScript("OnClick", function(self)
+            print("IAMCLICKED")
+        end)
+
+    end
 end
