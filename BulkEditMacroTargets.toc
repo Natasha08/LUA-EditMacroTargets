@@ -1,0 +1,12 @@
+#  --------------------
+## Interface: 90004
+## Title: BulkEditMacroTargets
+#  BulkEditTargets
+#  Originally by cptsancarter
+## Notes: Set macro variables
+## Version: 1.0
+## SavedVariablesPerCharacter:
+#  --------------------
+
+# BulkEditMacroTargets.lua
+BulkEditMacroTargets.xml
