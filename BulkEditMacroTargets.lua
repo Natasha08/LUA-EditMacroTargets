@@ -15,7 +15,7 @@ local function UpdateMacro(from, to, previousIndex)
     if string.find(body, at) or string.find(body, target) then
         macroText = string.gsub(body, from, to);
         EditMacro(currentIndex, name, nil, macroText);
-end
+    end
 
     local nextIndex = currentIndex + 1;
 
@@ -35,6 +35,8 @@ SlashCmdList["BulkEditMacroTargets"] = function(msg)
 
     if command == "replace" then
         local from, to = rest:match("^(%S*)%s*(.-)$");
+        -- is there a way to determine what the starting index for macros is
+        -- or a way to get a list of them to map over?
         UpdateMacro(from, to, 121);
         print("Bulk Edit Macro Targets: Macros have been updated!");
     end
@@ -74,6 +76,7 @@ SlashCmdList["BulkEditMacroTargets"] = function(msg)
         UIConfig.saveButton:SetNormalFontObject("GameFontNormalLarge");
         UIConfig.saveButton:SetHighlightFontObject("GameFontHighlightLarge");
         UIConfig.saveButton:SetScript("OnClick", function(self)
+            -- this event never fires
             print("IAMCLICKED")
         end)
 
