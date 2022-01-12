@@ -2,4 +2,125 @@
 
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+	<Frame parentKey="border" name="BEMT_GenericBorder" virtual="true" setAllPoints="true">
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="borderTop">
+					<Size x="1" y="1"/>
+				</Texture>
+				<Texture parentKey="borderBottom">
+					<Size x="1" y="1"/>
+				</Texture>
+				<Texture parentKey="borderLeft">
+					<Size x="1" y="1"/>
+
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.borderTop" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.borderBottom" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="borderRight">
+					<Size x="1" y="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.borderTop" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.borderBottom" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				function self:SetBorderSize(pixels)
+					self.size = pixels
+					self.borderTop:ClearAllPoints()
+					self.borderBottom:ClearAllPoints()
+
+					for i, tex in TMW:Vararg(self:GetRegions()) do
+						tex:SetShown(pixels ~= 0)
+						tex:SetSize(math.abs(pixels), math.abs(pixels))
+					end
+
+					-- Negative sizes should make inset borders.
+					-- Positive sizes will make outset borders
+					if 0 > pixels then
+						pixels = 0
+					end
+
+					self.borderTop:SetPoint("TOPLEFT", -pixels, pixels)
+					self.borderTop:SetPoint("TOPRIGHT", pixels, pixels)
+					
+					self.borderBottom:SetPoint("BOTTOMLEFT", -pixels, -pixels)
+					self.borderBottom:SetPoint("BOTTOMRIGHT", pixels, -pixels)
+
+				end
+
+				function self:SetColor(r, g, b, a)
+					a = a or 1
+
+					for i, tex in TMW:Vararg(self:GetRegions()) do
+						tex:SetColorTexture(r, g, b, a)
+					end
+				end
+
+				self:SetBorderSize(1)
+				self:SetColor(0, 0, 0, 1)
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<EditBox name="BEMT_InputBoxTemplate" enableMouse="true" virtual="true" autoFocus="false">
+		<Size y="15"/>
+		<Frames>
+			<Frame inherits="BEMT_GenericBorder" >
+				<Scripts>
+					<OnLoad inherit="prepend">
+						self:SetBorderSize(-1)
+						self:SetColor(.4, .4, .4, 1)
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="background" setAllPoints="true">
+					<Color r="0.42" g="0.48" b="0.54" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="BackgroundText" justifyH="CENTER" wordwrap="false" inherits="GameFontHighlightSmall">
+					<Color r="0.5" g="0.5" b="0.5"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<FontString inherits="GameFontHighlight"/>
+	</EditBox>
+
+	<Button name="BEMT_ButtonTemplate" virtual="true">
+		<Size x="144" y="15"/>
+
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0.15" g="0.15" b="0.15" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnable>
+				self:SetAlpha(1)
+			</OnEnable>
+			<OnDisable>
+				self:SetAlpha(0.7)
+			</OnDisable>
+		</Scripts>
+	</Button>
 </Ui>

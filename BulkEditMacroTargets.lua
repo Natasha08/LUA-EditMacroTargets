@@ -4,6 +4,16 @@
 
 SLASH_BulkEditMacroTargets1 = "/bet";
 
+-- TODOS
+-- if either from or to is empty display an error
+  -- on button click
+  -- when using the replace method
+-- configure help tips
+-- update slash commands (bet or betm, and when it is written out in long form)
+-- is there a better way to get the first index of the macros, or get the list to map over?
+-- refactor/cleanup
+
+
 local function UpdateMacro(from, to, previousIndex)
     currentIndex = previousIndex;
     name, icon, body, isLocal = GetMacroInfo(currentIndex);
@@ -27,6 +37,8 @@ local function UpdateMacro(from, to, previousIndex)
 
     if nextName ~= nil then
         UpdateMacro(from , to, nextIndex);
+    else
+        print("Bulk Edit Macro Targets: Macros have been updated!");
     end
 end
 
@@ -35,8 +47,6 @@ SlashCmdList["BulkEditMacroTargets"] = function(msg)
 
     if command == "replace" then
         local from, to = rest:match("^(%S*)%s*(.-)$");
-        -- is there a way to determine what the starting index for macros is
-        -- or a way to get a list of them to map over?
         UpdateMacro(from, to, 121);
         print("Bulk Edit Macro Targets: Macros have been updated!");
     end
@@ -53,32 +63,32 @@ SlashCmdList["BulkEditMacroTargets"] = function(msg)
         UIConfig.title:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", 5, 0);
         UIConfig.title:SetText("Bulk Edit Target Options");
 
-        UIConfig.editInput1 = CreateFrame("EditBox", "FromInput", UIConfig, "InputBoxTemplate");
-        UIConfig.editInput1:SetPoint("LEFT", UIConfig, "TOP", -60, -100);
-        UIConfig.editInput1:SetWidth(180);
-        UIConfig.editInput1:SetHeight(400);
-        UIConfig.editInput1:SetMovable(false);
-        UIConfig.editInput1:SetAutoFocus(true);
-        UIConfig.editInput1:SetMaxLetters(100);
-
-        UIConfig.editInput2 = CreateFrame("EditBox", "ToInput", UIConfig, "InputBoxTemplate");
-        UIConfig.editInput2:SetPoint("LEFT", UIConfig,  "TOP", -60, -130);
-        UIConfig.editInput2:SetWidth(180);
-        UIConfig.editInput2:SetHeight(400);
-        UIConfig.editInput2:SetMovable(false);
-        UIConfig.editInput2:SetAutoFocus(false);
-        UIConfig.editInput2:SetMaxLetters(100);
-
-        UIConfig.saveButton = CreateFrame("Button", nil, UIConfig, "GameMenuButtonTemplate");
+        UIConfig.saveButton = CreateFrame("Button", "saveButton", UIConfig, "BEMT_ButtonTemplate");
         UIConfig.saveButton:SetPoint("CENTER", UIConfig, "Bottom", 0, 70);
         UIConfig.saveButton:SetSize(70, 30);
         UIConfig.saveButton:SetText("Save");
         UIConfig.saveButton:SetNormalFontObject("GameFontNormalLarge");
         UIConfig.saveButton:SetHighlightFontObject("GameFontHighlightLarge");
         UIConfig.saveButton:SetScript("OnClick", function(self)
-            -- this event never fires
-            print("IAMCLICKED")
+            from = UIConfig.editInput1:GetText()
+            to = UIConfig.editInput2:GetText()
+            UpdateMacro(from, to, 121);
         end)
 
+        UIConfig.editInput1 = CreateFrame("EditBox", "FromInput", UIConfig, "BEMT_InputBoxTemplate");
+        UIConfig.editInput1:SetPoint("LEFT", UIConfig, "TOP", -60, -100);
+        UIConfig.editInput1:SetWidth(180);
+        UIConfig.editInput1:SetHeight(40);
+        UIConfig.editInput1:SetMovable(false);
+        UIConfig.editInput1:SetAutoFocus(true);
+        UIConfig.editInput1:SetMaxLetters(100);
+
+        UIConfig.editInput2 = CreateFrame("EditBox", "ToInput", UIConfig, "BEMT_InputBoxTemplate");
+        UIConfig.editInput2:SetPoint("LEFT", UIConfig,  "TOP", -60, -130);
+        UIConfig.editInput2:SetWidth(180);
+        UIConfig.editInput2:SetHeight(40);
+        UIConfig.editInput2:SetMovable(false);
+        UIConfig.editInput2:SetAutoFocus(false);
+        UIConfig.editInput2:SetMaxLetters(100);
     end
 end
