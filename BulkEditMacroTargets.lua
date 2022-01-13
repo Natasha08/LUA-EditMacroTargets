@@ -36,7 +36,7 @@ local function UpdateMacro(from, to, previousIndex)
     nextName, nextIcon, nextBody, nextIsLocal = GetMacroInfo(nextIndex);
 
     if nextName ~= nil then
-        UpdateMacro(from , to, nextIndex);
+        UpdateMacro(from, to, nextIndex);
     else
         print("Bulk Edit Macro Targets: Macros have been updated!");
     end
@@ -70,9 +70,11 @@ SlashCmdList["BulkEditMacroTargets"] = function(msg)
         UIConfig.saveButton:SetNormalFontObject("GameFontNormalLarge");
         UIConfig.saveButton:SetHighlightFontObject("GameFontHighlightLarge");
         UIConfig.saveButton:SetScript("OnClick", function(self)
-            from = UIConfig.editInput1:GetText()
-            to = UIConfig.editInput2:GetText()
+            from = UIConfig.editInput1:GetText();
+            to = UIConfig.editInput2:GetText();
+            if (MacroFrame:IsShown()) then HideUIPanel(MacroFrame);end
             UpdateMacro(from, to, 121);
+            HideUIPanel(UIConfig);
         end)
 
         UIConfig.editInput1 = CreateFrame("EditBox", "FromInput", UIConfig, "BEMT_InputBoxTemplate");
