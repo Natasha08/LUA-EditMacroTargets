@@ -43,6 +43,49 @@ local function UpdateMacro(from, to, previousIndex)
     end
 end
 
+local function DisplayModal(msg)
+    local Modal = CreateFrame("Frame", "BET_TargetFrame", UIParent, "EtherealFrameTemplate");
+
+    Modal:SetSize(300, 360);
+    Modal:SetPoint("CENTER", UIParent, "CENTER");
+    Modal:SetFrameLevel(100)
+
+    Modal.title = Modal:CreateFontString(nil, "OVERLAY");
+    Modal.title:SetFontObject("GameFontHighlight");
+    Modal.title:SetPoint("CENTER", Modal.TitleBg, "CENTER", 5, 0);
+    Modal.title:SetText("Bulk Edit Target Options");
+
+    Modal.saveButton = CreateFrame("Button", "saveButton", Modal, "BEMT_ButtonTemplate");
+    Modal.saveButton:SetPoint("CENTER", Modal, "Bottom", 0, 70);
+    Modal.saveButton:SetSize(70, 30);
+    Modal.saveButton:SetText("Save");
+    Modal.saveButton:SetNormalFontObject("GameFontNormalLarge");
+    Modal.saveButton:SetHighlightFontObject("GameFontHighlightLarge");
+    Modal.saveButton:SetScript("OnClick", function(self)
+        from = Modal.editInput1:GetText();
+        to = Modal.editInput2:GetText();
+        if (MacroFrame:IsShown()) then HideUIPanel(MacroFrame);end
+        UpdateMacro(from, to, 121);
+        HideUIPanel(Modal);
+    end)
+
+    Modal.editInput1 = CreateFrame("EditBox", "FromInput", Modal, "BEMT_InputBoxTemplate");
+    Modal.editInput1:SetPoint("LEFT", Modal, "TOP", -60, -100);
+    Modal.editInput1:SetWidth(180);
+    Modal.editInput1:SetHeight(40);
+    Modal.editInput1:SetMovable(false);
+    Modal.editInput1:SetAutoFocus(true);
+    Modal.editInput1:SetMaxLetters(100);
+
+    Modal.editInput2 = CreateFrame("EditBox", "ToInput", Modal, "BEMT_InputBoxTemplate");
+    Modal.editInput2:SetPoint("LEFT", Modal,  "TOP", -60, -130);
+    Modal.editInput2:SetWidth(180);
+    Modal.editInput2:SetHeight(40);
+    Modal.editInput2:SetMovable(false);
+    Modal.editInput2:SetAutoFocus(false);
+    Modal.editInput2:SetMaxLetters(100);
+end
+
 SlashCmdList["BulkEditMacroTargets"] = function(msg)
     local command, rest = msg:match("^(%S*)%s*(.-)$");
 
@@ -52,45 +95,6 @@ SlashCmdList["BulkEditMacroTargets"] = function(msg)
     end
 
     if msg == "" then
-        local UIConfig = CreateFrame("Frame", "BET_TargetFrame", UIParent, "EtherealFrameTemplate");
-
-        UIConfig:SetSize(300, 360);
-        UIConfig:SetPoint("CENTER", UIParent, "CENTER");
-        UIConfig:SetFrameLevel(100)
-
-        UIConfig.title = UIConfig:CreateFontString(nil, "OVERLAY");
-        UIConfig.title:SetFontObject("GameFontHighlight");
-        UIConfig.title:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", 5, 0);
-        UIConfig.title:SetText("Bulk Edit Target Options");
-
-        UIConfig.saveButton = CreateFrame("Button", "saveButton", UIConfig, "BEMT_ButtonTemplate");
-        UIConfig.saveButton:SetPoint("CENTER", UIConfig, "Bottom", 0, 70);
-        UIConfig.saveButton:SetSize(70, 30);
-        UIConfig.saveButton:SetText("Save");
-        UIConfig.saveButton:SetNormalFontObject("GameFontNormalLarge");
-        UIConfig.saveButton:SetHighlightFontObject("GameFontHighlightLarge");
-        UIConfig.saveButton:SetScript("OnClick", function(self)
-            from = UIConfig.editInput1:GetText();
-            to = UIConfig.editInput2:GetText();
-            if (MacroFrame:IsShown()) then HideUIPanel(MacroFrame);end
-            UpdateMacro(from, to, 121);
-            HideUIPanel(UIConfig);
-        end)
-
-        UIConfig.editInput1 = CreateFrame("EditBox", "FromInput", UIConfig, "BEMT_InputBoxTemplate");
-        UIConfig.editInput1:SetPoint("LEFT", UIConfig, "TOP", -60, -100);
-        UIConfig.editInput1:SetWidth(180);
-        UIConfig.editInput1:SetHeight(40);
-        UIConfig.editInput1:SetMovable(false);
-        UIConfig.editInput1:SetAutoFocus(true);
-        UIConfig.editInput1:SetMaxLetters(100);
-
-        UIConfig.editInput2 = CreateFrame("EditBox", "ToInput", UIConfig, "BEMT_InputBoxTemplate");
-        UIConfig.editInput2:SetPoint("LEFT", UIConfig,  "TOP", -60, -130);
-        UIConfig.editInput2:SetWidth(180);
-        UIConfig.editInput2:SetHeight(40);
-        UIConfig.editInput2:SetMovable(false);
-        UIConfig.editInput2:SetAutoFocus(false);
-        UIConfig.editInput2:SetMaxLetters(100);
+        DisplayModal(msg);
     end
 end
