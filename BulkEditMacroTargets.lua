@@ -9,6 +9,7 @@ SLASH_BulkEditMacroTargets1 = "/bet";
   -- on button click
   -- when using the replace method
 -- configure help tips
+-- change the name to EditMacroTargets? (Github, files etc)
 -- update slash commands (bet or betm, and when it is written out in long form)
 -- is there a better way to get the first index of the macros, or get the list to map over?
 -- refactor/cleanup
@@ -48,7 +49,6 @@ SlashCmdList["BulkEditMacroTargets"] = function(msg)
     if command == "replace" then
         local from, to = rest:match("^(%S*)%s*(.-)$");
         UpdateMacro(from, to, 121);
-        print("Bulk Edit Macro Targets: Macros have been updated!");
     end
 
     if msg == "" then
