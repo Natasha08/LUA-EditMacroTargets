@@ -14,7 +14,7 @@ When creating macros in World of Warcraft, you can target a specific player usin
 
 ### Targeting using target=
 
-*macro example
+*macro example*
 
 ```
 #showtooltip
