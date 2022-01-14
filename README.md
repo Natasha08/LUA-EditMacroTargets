@@ -1,1 +1,1 @@
-WoW LUA Bulk Edit Macro Targets
+WoW LUA Edit Macro Targets
