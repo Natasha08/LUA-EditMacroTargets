@@ -1,0 +1,11 @@
+#  --------------------
+## Interface: 90105
+## Title: EditMacroTargets
+#  EditMacroTargets
+#  Originally by omadasala
+## Notes: Update macros with the same target simultaneously
+## Version: 1.0
+#  --------------------
+
+EditMacroTargets.xml
+EditMacroTargets.lua

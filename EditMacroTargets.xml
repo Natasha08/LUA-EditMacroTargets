@@ -2,7 +2,7 @@
 
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Frame parentKey="border" name="BEMT_GenericBorder" virtual="true" setAllPoints="true">
+	<Frame parentKey="border" name="EMT_GenericBorder" virtual="true" setAllPoints="true">
 		<Size x="1" y="1"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -49,7 +49,7 @@
 
 					self.borderTop:SetPoint("TOPLEFT", -pixels, pixels)
 					self.borderTop:SetPoint("TOPRIGHT", pixels, pixels)
-					
+
 					self.borderBottom:SetPoint("BOTTOMLEFT", -pixels, -pixels)
 					self.borderBottom:SetPoint("BOTTOMRIGHT", pixels, -pixels)
 
@@ -69,10 +69,10 @@
 		</Scripts>
 	</Frame>
 
-	<EditBox name="BEMT_InputBoxTemplate" enableMouse="true" virtual="true" autoFocus="false">
+	<EditBox name="EMT_EditBoxTemplate" enableMouse="true" virtual="true" autoFocus="false">
 		<Size y="15"/>
 		<Frames>
-			<Frame inherits="BEMT_GenericBorder" >
+			<Frame inherits="EMT_GenericBorder" >
 				<Scripts>
 					<OnLoad inherit="prepend">
 						self:SetBorderSize(-1)
@@ -100,7 +100,7 @@
 		<FontString inherits="GameFontHighlight"/>
 	</EditBox>
 
-	<Button name="BEMT_ButtonTemplate" virtual="true">
+	<Button name="EMT_ButtonTemplate" virtual="true">
 		<Size x="144" y="15"/>
 
 		<NormalFont style="GameFontNormal"/>
