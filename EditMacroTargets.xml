@@ -35,14 +35,8 @@
 					self.size = pixels
 					self.borderTop:ClearAllPoints()
 					self.borderBottom:ClearAllPoints()
+					self:SetSize(math.abs(pixels), math.abs(pixels))
 
-					for i, tex in TMW:Vararg(self:GetRegions()) do
-						tex:SetShown(pixels ~= 0)
-						tex:SetSize(math.abs(pixels), math.abs(pixels))
-					end
-
-					-- Negative sizes should make inset borders.
-					-- Positive sizes will make outset borders
 					if 0 > pixels then
 						pixels = 0
 					end
@@ -55,16 +49,7 @@
 
 				end
 
-				function self:SetColor(r, g, b, a)
-					a = a or 1
-
-					for i, tex in TMW:Vararg(self:GetRegions()) do
-						tex:SetColorTexture(r, g, b, a)
-					end
-				end
-
 				self:SetBorderSize(1)
-				self:SetColor(0, 0, 0, 1)
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -76,7 +61,6 @@
 				<Scripts>
 					<OnLoad inherit="prepend">
 						self:SetBorderSize(-1)
-						self:SetColor(.4, .4, .4, 1)
 					</OnLoad>
 				</Scripts>
 			</Frame>

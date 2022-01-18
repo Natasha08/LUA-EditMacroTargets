@@ -2,7 +2,9 @@
 -- Bulk Edit Targets
 -- Originally by omadasala
 
-SLASH_EditMacroTargets1 = "/bet";
+SLASH_EditMacroTargets1 = "/emt";
+SLASH_EditMacroTargets2 = "/editmacrotargets";
+
 
 -- TODOS
 -- if either from or to is empty display an error
@@ -15,14 +17,15 @@ SLASH_EditMacroTargets1 = "/bet";
 
 
 local function UpdateMacro(from, to, previousIndex)
+    if (MacroFrame and MacroFrame:IsShown()) then HideUIPanel(MacroFrame);end
     currentIndex = previousIndex;
     name, icon, body, isLocal = GetMacroInfo(currentIndex);
 
     at = string.gsub("@name", "name", from)
-    target = string.gsub("target=name", "name", to)
+    target = string.gsub("target=name", "name", from)
 
 
-    if string.find(body, at) or string.find(body, target) then
+    if body:find(at) or body:find(target) then
         macroText = string.gsub(body, from, to);
         EditMacro(currentIndex, name, nil, macroText);
     end
@@ -38,11 +41,12 @@ local function UpdateMacro(from, to, previousIndex)
     if nextName ~= nil then
         UpdateMacro(from, to, nextIndex);
     else
+        HideUIPanel(Modal);
         print("Bulk Edit Macro Targets: Macros have been updated!");
     end
 end
 
-local function DisplayModal(msg)
+local function DisplayModal()
     local Modal = CreateFrame("Frame", "EMT_TargetFrame", UIParent, "EtherealFrameTemplate");
 
     Modal:SetSize(300, 360);
@@ -63,9 +67,7 @@ local function DisplayModal(msg)
     Modal.saveButton:SetScript("OnClick", function(self)
         from = Modal.editInput1:GetText();
         to = Modal.editInput2:GetText();
-        if (MacroFrame:IsShown()) then HideUIPanel(MacroFrame);end
         UpdateMacro(from, to, 121);
-        HideUIPanel(Modal);
     end)
 
     Modal.editInput1 = CreateFrame("EditBox", "FromInput", Modal, "EMT_EditBoxTemplate");
@@ -86,14 +88,14 @@ local function DisplayModal(msg)
 end
 
 SlashCmdList["EditMacroTargets"] = function(msg)
-    local command, rest = msg:match("^(%S*)%s*(.-)$");
+    local command, names = msg:match("^(%S*)%s*(.-)$");
 
     if command == "replace" then
-        local from, to = rest:match("^(%S*)%s*(.-)$");
+        local from, to = names:match("^(%S*)%s*(.-)$");
         UpdateMacro(from, to, 121);
     end
 
     if msg == "" then
-        DisplayModal(msg);
+        DisplayModal();
     end
 end
