@@ -2,82 +2,22 @@
 
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Frame parentKey="border" name="EMT_GenericBorder" virtual="true" setAllPoints="true">
-		<Size x="1" y="1"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="borderTop">
-					<Size x="1" y="1"/>
-				</Texture>
-				<Texture parentKey="borderBottom">
-					<Size x="1" y="1"/>
-				</Texture>
-				<Texture parentKey="borderLeft">
-					<Size x="1" y="1"/>
-
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.borderTop" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.borderBottom" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="borderRight">
-					<Size x="1" y="1"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeKey="$parent.borderTop" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.borderBottom" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad>
-				function self:SetBorderSize(pixels)
-					self.size = pixels
-					self.borderTop:ClearAllPoints()
-					self.borderBottom:ClearAllPoints()
-					self:SetSize(math.abs(pixels), math.abs(pixels))
-
-					if 0 > pixels then
-						pixels = 0
-					end
-
-					self.borderTop:SetPoint("TOPLEFT", -pixels, pixels)
-					self.borderTop:SetPoint("TOPRIGHT", pixels, pixels)
-
-					self.borderBottom:SetPoint("BOTTOMLEFT", -pixels, -pixels)
-					self.borderBottom:SetPoint("BOTTOMRIGHT", pixels, -pixels)
-
-				end
-
-				self:SetBorderSize(1)
-			</OnLoad>
-		</Scripts>
-	</Frame>
-
 	<EditBox name="EMT_EditBoxTemplate" enableMouse="true" virtual="true" autoFocus="false">
-		<Size y="15"/>
-		<Frames>
-			<Frame inherits="EMT_GenericBorder" >
-				<Scripts>
-					<OnLoad inherit="prepend">
-						self:SetBorderSize(-1)
-					</OnLoad>
-				</Scripts>
-			</Frame>
-		</Frames>
+    	<Anchors>
+			<Anchor point="center" relativeTo="EMT" relativePoint="center" y="50"/>
+		</Anchors>
+		<Size x="200" y="25"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="background" setAllPoints="true">
-					<Color r="0.42" g="0.48" b="0.54" a="1"/>
+					<Color r="0.5" g="0.4" b="0.3" a="1"/>
 				</Texture>
 			</Layer>
+
 			<Layer level="OVERLAY">
-				<FontString parentKey="BackgroundText" justifyH="CENTER" wordwrap="false" inherits="GameFontHighlightSmall">
+				<FontString parentKey="BackgroundText" justifyH="center" wordwrap="false" inherits="GameFontHighlightSmall">
 					<Color r="0.5" g="0.5" b="0.5"/>
-					<Anchors>
-						<Anchor point="LEFT"/>
-						<Anchor point="RIGHT"/>
-					</Anchors>
+
 				</FontString>
 			</Layer>
 		</Layers>
@@ -85,8 +25,10 @@
 	</EditBox>
 
 	<Button name="EMT_ButtonTemplate" virtual="true">
-		<Size x="144" y="15"/>
-
+		<Size x="80" y="30"/>
+    	<Anchors>
+			<Anchor point="center" relativeTo="EMT" relativePoint="bottom" y="70"/>
+		</Anchors>
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
@@ -102,8 +44,21 @@
 			<OnEnable>
 				self:SetAlpha(1)
 			</OnEnable>
+			<OnLoad>
+				self:Disable()
+			</OnLoad>
+			<OnUpdate>
+				input1 = EMT.editTargetFrom:GetText()
+				input2 = EMT.editTargetTo:GetText()
+
+				if input1 ~= ""  and input2 ~= "" then
+					self:Enable()
+				else
+					self:Disable()
+				end
+			</OnUpdate>
 			<OnDisable>
-				self:SetAlpha(0.7)
+				self:SetAlpha(0.8)
 			</OnDisable>
 		</Scripts>
 	</Button>

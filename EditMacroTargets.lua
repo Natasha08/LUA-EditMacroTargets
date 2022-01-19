@@ -14,7 +14,7 @@ SLASH_EditMacroTargets2 = "/editmacrotargets";
 -- refactor/cleanup
 
 local LibOO = LibStub("LibOO-1.0", true);
-local EMT = CreateFrame("Frame", "EMT_TargetFrame", UIParent, "EtherealFrameTemplate");
+local EMT = CreateFrame("Frame", "EMT_TargetFrame", UIParent, "BasicFrameTemplate");
 local INITIAL_MACRO_INDEX = 1;
 _G.EMT = LibStub("AceAddon-3.0"):NewAddon(EMT, "EditMacroTargets", "AceEvent-3.0", "AceTimer-3.0", "AceConsole-3.0", "AceComm-3.0", "AceSerializer-3.0");
 _G.EditMacroTargets = _G.EMT;
@@ -30,7 +30,15 @@ function EMT:Print(msg)
     return print(header .. msg);
 end
 
+function EMT:ValidateText(text)
+    return text ~= nil and text ~= "";
+end
+
 function EMT:UpdateMacro(from, to, previousIndex)
+    if (MacroFrame ~= nil and MacroFrame:IsShown()) then HideUIPanel(MacroFrame);end
+    if from == "" then EMT:Print("the target name you are changing to is missing.");end
+    if to == "" then return EMT:Print("the target name you are changing from is missing.");end
+
     currentIndex = previousIndex or INITIAL_MACRO_INDEX;
     name, icon, body, isLocal = GetMacroInfo(currentIndex);
 
@@ -54,48 +62,41 @@ function EMT:UpdateMacro(from, to, previousIndex)
     if nextName ~= nil then
         EMT:UpdateMacro(from, to, nextIndex);
     else
-        HideUIPanel(Modal);
+        HideUIPanel(EMT);
         EMT:Print("Macros have been updated!");
     end
 end
 
 function EMT:DisplayModal()
-    EMT:SetSize(300, 360);
-    EMT:SetPoint("CENTER", UIParent, "CENTER");
+    ShowUIPanel(EMT);
+    EMT:SetSize(250, 300);
+    EMT:SetPoint("center", UIParent, "center");
     EMT:SetFrameLevel(100)
 
     EMT.title = EMT:CreateFontString(nil, "OVERLAY");
-    EMT.title:SetFontObject("GameFontHighlight");
-    EMT.title:SetPoint("CENTER", EMT.TitleBg, "CENTER", 5, 0);
+    EMT.title:SetFontObject("GameFontNormal");
+    EMT.title:SetPoint("center", EMT.TitleBg, "center", 5, 0);
     EMT.title:SetText("Bulk Edit Target Options");
 
     EMT.saveButton = CreateFrame("Button", "saveButton", EMT, "EMT_ButtonTemplate");
-    EMT.saveButton:SetPoint("CENTER", EMT, "Bottom", 0, 70);
-    EMT.saveButton:SetSize(70, 30);
     EMT.saveButton:SetText("Save");
-    EMT.saveButton:SetNormalFontObject("GameFontNormalLarge");
-    EMT.saveButton:SetHighlightFontObject("GameFontHighlightLarge");
     EMT.saveButton:SetScript("OnClick", function(self)
-        from = EMT.editInput1:GetText();
-        to = EMT.editInput2:GetText();
+        from = EMT.editTargetFrom:GetText();
+        to = EMT.editTargetTo:GetText();
         EMT:UpdateMacro(from, to);
     end)
 
-    EMT.editInput1 = CreateFrame("EditBox", "FromInput", EMT, "EMT_EditBoxTemplate");
-    EMT.editInput1:SetPoint("LEFT", EMT, "TOP", -60, -100);
-    EMT.editInput1:SetWidth(180);
-    EMT.editInput1:SetHeight(40);
-    EMT.editInput1:SetMovable(false);
-    EMT.editInput1:SetAutoFocus(true);
-    EMT.editInput1:SetMaxLetters(100);
+    EMT.editTargetFrom = CreateFrame("EditBox", "EMT_editTargetFrom", EMT, "EMT_EditBoxTemplate");
+    EMT.editTargetFrom:SetAutoFocus(true);
+    EMT.editTargetFrom.Label = EMT.editTargetFrom:CreateFontString(nil , "Background", "GameTooltipText");
+    EMT.editTargetFrom.Label:SetText("The player name to change from");
+    EMT.editTargetFrom.Label:SetPoint("left", EMT.editTargetFrom, "left", 0, 30);
 
-    EMT.editInput2 = CreateFrame("EditBox", "ToInput", EMT, "EMT_EditBoxTemplate");
-    EMT.editInput2:SetPoint("LEFT", EMT,  "TOP", -60, -130);
-    EMT.editInput2:SetWidth(180);
-    EMT.editInput2:SetHeight(40);
-    EMT.editInput2:SetMovable(false);
-    EMT.editInput2:SetAutoFocus(false);
-    EMT.editInput2:SetMaxLetters(100);
+    EMT.editTargetTo = CreateFrame("EditBox", "EMT_editTargetTo", EMT, "EMT_EditBoxTemplate");
+    EMT.editTargetTo:SetPoint("center", EMT,  "center", 0, -10);
+    EMT.editTargetTo.Label = EMT.editTargetTo:CreateFontString(nil , "Background", "GameTooltipText");
+    EMT.editTargetTo.Label:SetText("The target name to change to");
+    EMT.editTargetTo.Label:SetPoint("left", EMT.editTargetTo, "left", 0, 30);
 end
 
 EMT:RegisterEvent("PLAYER_REGEN_DISABLED", function()
@@ -105,7 +106,6 @@ end)
 EMT:RegisterEvent("PLAYER_REGEN_ENABLED", function()
     EMT.locked = false;
 end)
-
 
 SlashCmdList["EditMacroTargets"] = function(msg)
     if UnitIsDeadOrGhost("player") or EMT.locked then
