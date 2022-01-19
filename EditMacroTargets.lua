@@ -9,9 +9,8 @@ SLASH_EditMacroTargets2 = "/editmacrotargets";
 -- TODOS
 -- if either from or to is empty display an error
   -- on button click
-  -- when using the replace method
+-- add error msg for too many arguments
 -- configure help tips
--- style user displayed messages and warnings
 -- refactor/cleanup
 
 local LibOO = LibStub("LibOO-1.0", true);
@@ -22,8 +21,16 @@ _G.EditMacroTargets = _G.EMT;
 local EMT = _G.EMT;
 EMT.locked = false;
 
-local function UpdateMacro(from, to, previousIndex)
-    if (MacroFrame and MacroFrame:IsShown()) then HideUIPanel(MacroFrame);end
+local function setTextColor(text, color)
+    local textColor = color or "8000ffff";
+    return WrapTextInColorCode(text, textColor);
+end
+local header = setTextColor("EditMacroTargets: ");
+function EMT:Print(msg)
+    return print(header .. msg);
+end
+
+function EMT:UpdateMacro(from, to, previousIndex)
     currentIndex = previousIndex or INITIAL_MACRO_INDEX;
     name, icon, body, isLocal = GetMacroInfo(currentIndex);
 
@@ -45,14 +52,14 @@ local function UpdateMacro(from, to, previousIndex)
     nextName, nextIcon, nextBody, nextIsLocal = GetMacroInfo(nextIndex);
 
     if nextName ~= nil then
-        UpdateMacro(from, to, nextIndex);
+        EMT:UpdateMacro(from, to, nextIndex);
     else
         HideUIPanel(Modal);
-        print("Bulk Edit Macro Targets: Macros have been updated!");
+        EMT:Print("Macros have been updated!");
     end
 end
 
-local function DisplayModal()
+function EMT:DisplayModal()
     EMT:SetSize(300, 360);
     EMT:SetPoint("CENTER", UIParent, "CENTER");
     EMT:SetFrameLevel(100)
@@ -71,7 +78,7 @@ local function DisplayModal()
     EMT.saveButton:SetScript("OnClick", function(self)
         from = EMT.editInput1:GetText();
         to = EMT.editInput2:GetText();
-        UpdateMacro(from, to);
+        EMT:UpdateMacro(from, to);
     end)
 
     EMT.editInput1 = CreateFrame("EditBox", "FromInput", EMT, "EMT_EditBoxTemplate");
@@ -99,18 +106,19 @@ EMT:RegisterEvent("PLAYER_REGEN_ENABLED", function()
     EMT.locked = false;
 end)
 
+
 SlashCmdList["EditMacroTargets"] = function(msg)
     if UnitIsDeadOrGhost("player") or EMT.locked then
-       return print("EditMacroTargets is locked while dead or in combat.");
+        EMT:Print("EMT is locked while player is dead or in combat.");
     end
 
     local from, to = msg:match("^(%S*)%s*(.-)$");
 
-    if from ~= nil and to ~= nil then
-        UpdateMacro(from, to);
-    end
-
     if msg == "" then
-        DisplayModal();
+        EMT:DisplayModal();
+    elseif from ~= "" and to ~= "" then
+        EMT:UpdateMacro(from, to);
+    else
+        EMT:Print("the target name you are changing to is missing.");
     end
 end
