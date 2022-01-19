@@ -22,6 +22,11 @@
 			</Layer>
 		</Layers>
 		<FontString inherits="GameFontHighlight"/>
+		<Scripts>
+			<OnEnterPressed>
+				self:ClearFocus()
+			</OnEnterPressed>
+		</Scripts>
 	</EditBox>
 
 	<Button name="EMT_ButtonTemplate" virtual="true">
@@ -32,14 +37,13 @@
 		<NormalFont style="GameFontNormal"/>
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
+		<DisabledTexture>
+			<Color r="0.15" g="0.15" b="0.15" a="0.5"/>
+		</DisabledTexture>
+		<NormalTexture>
+			<Color r="0.45" g="0.15" b="0.15" a="1"/>
+		</NormalTexture>
 
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" setAllPoints="true">
-					<Color r="0.15" g="0.15" b="0.15" a="0.5"/>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Scripts>
 			<OnEnable>
 				self:SetAlpha(1)

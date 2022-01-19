@@ -7,9 +7,6 @@ SLASH_EditMacroTargets2 = "/editmacrotargets";
 
 
 -- TODOS
--- if either from or to is empty display an error
-  -- on button click
--- add error msg for too many arguments
 -- configure help tips
 -- refactor/cleanup
 
@@ -67,8 +64,7 @@ function EMT:UpdateMacro(from, to, previousIndex)
     end
 end
 
-function EMT:DisplayModal()
-    ShowUIPanel(EMT);
+function EMT:CreateChildFrames()
     EMT:SetSize(250, 300);
     EMT:SetPoint("center", UIParent, "center");
     EMT:SetFrameLevel(100)
@@ -87,9 +83,8 @@ function EMT:DisplayModal()
     end)
 
     EMT.editTargetFrom = CreateFrame("EditBox", "EMT_editTargetFrom", EMT, "EMT_EditBoxTemplate");
-    EMT.editTargetFrom:SetAutoFocus(true);
     EMT.editTargetFrom.Label = EMT.editTargetFrom:CreateFontString(nil , "Background", "GameTooltipText");
-    EMT.editTargetFrom.Label:SetText("The player name to change from");
+    EMT.editTargetFrom.Label:SetText("The target name to change from");
     EMT.editTargetFrom.Label:SetPoint("left", EMT.editTargetFrom, "left", 0, 30);
 
     EMT.editTargetTo = CreateFrame("EditBox", "EMT_editTargetTo", EMT, "EMT_EditBoxTemplate");
@@ -99,6 +94,11 @@ function EMT:DisplayModal()
     EMT.editTargetTo.Label:SetPoint("left", EMT.editTargetTo, "left", 0, 30);
 end
 
+EMT:RegisterEvent("PLAYER_LOGIN", function()
+    HideUIPanel(EMT);
+    EMT:CreateChildFrames();
+end)
+
 EMT:RegisterEvent("PLAYER_REGEN_DISABLED", function()
     EMT.locked = true;
 end)
@@ -107,18 +107,36 @@ EMT:RegisterEvent("PLAYER_REGEN_ENABLED", function()
     EMT.locked = false;
 end)
 
+function EMT:ToggleDisplay()
+    if (EMT:IsVisible()) then
+        HideUIPanel(EMT);
+    else
+        ShowUIPanel(EMT);
+    end
+end
+
 SlashCmdList["EditMacroTargets"] = function(msg)
     if UnitIsDeadOrGhost("player") or EMT.locked then
         EMT:Print("EMT is locked while player is dead or in combat.");
     end
 
-    local from, to = msg:match("^(%S*)%s*(.-)$");
-
     if msg == "" then
-        EMT:DisplayModal();
+        EMT:ToggleDisplay();
     elseif from ~= "" and to ~= "" then
-        EMT:UpdateMacro(from, to);
+        local from, to, extra = strsplit(" ", msg, 3);
+
+        if extra ~= "" then
+            EMT:Print(string.gsub("extra arguments entered: $", "$", extra));
+            EMT.editTargetFrom:SetText(from);
+            EMT.editTargetTo:SetText(to);
+    
+            ShowUIPanel(EMT);
+        else
+            EMT:UpdateMacro(from, to);
+        end
     else
-        EMT:Print("the target name you are changing to is missing.");
+        EMT:Print("the target player name you are changing to is missing.");
+        EMT.editTargetFrom:SetText(from);
+        ShowUIPanel(EMT);
     end
 end
