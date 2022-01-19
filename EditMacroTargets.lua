@@ -2,20 +2,21 @@
 -- Bulk Edit Targets
 -- Originally by omadasala
 
-SLASH_EditMacroTargets1 = "/emt";
-SLASH_EditMacroTargets2 = "/editmacrotargets";
+SLASH_EditMacroTargets1, SLASH_EditMacroTargets2 = "/emt", "/editmacrotargets";
 
-
--- TODOS
+-- TODOS (CLOSED TO NEW FEATURES!)
 -- configure help tips
 -- refactor/cleanup
+-- versioning and checking for updates
+-- print how many macros have been modified
 
 local LibOO = LibStub("LibOO-1.0", true);
-local EMT = CreateFrame("Frame", "EMT_TargetFrame", UIParent, "BasicFrameTemplate");
 local INITIAL_MACRO_INDEX = 1;
-_G.EMT = LibStub("AceAddon-3.0"):NewAddon(EMT, "EditMacroTargets", "AceEvent-3.0", "AceTimer-3.0", "AceConsole-3.0", "AceComm-3.0", "AceSerializer-3.0");
+local App = CreateFrame("Frame", "BET_Main_Frame", UIParent, "BasicFrameTemplate");
+_G.EMT = LibStub("AceAddon-3.0"):NewAddon(App, "EditMacroTargets", "AceEvent-3.0", "AceTimer-3.0", "AceConsole-3.0", "AceComm-3.0", "AceSerializer-3.0");
 _G.EditMacroTargets = _G.EMT;
 local EMT = _G.EMT;
+EMT.App = App;
 EMT.locked = false;
 
 local function setTextColor(text, color)
@@ -32,7 +33,7 @@ function EMT:ValidateText(text)
 end
 
 function EMT:UpdateMacro(from, to, previousIndex)
-    if (MacroFrame ~= nil and MacroFrame:IsShown()) then HideUIPanel(MacroFrame);end
+    if (MacroFrame ~= nil and MacroFrame:IsShown()) then MacroFrame:Hide();end
     if from == "" then EMT:Print("the target name you are changing to is missing.");end
     if to == "" then return EMT:Print("the target name you are changing from is missing.");end
 
@@ -59,44 +60,73 @@ function EMT:UpdateMacro(from, to, previousIndex)
     if nextName ~= nil then
         EMT:UpdateMacro(from, to, nextIndex);
     else
-        HideUIPanel(EMT);
+        EMT.App:Hide();
         EMT:Print("Macros have been updated!");
     end
 end
 
-function EMT:CreateChildFrames()
-    EMT:SetSize(250, 300);
-    EMT:SetPoint("center", UIParent, "center");
-    EMT:SetFrameLevel(100)
+function EMT:CreateChildFrames(frame)
+    frame:SetSize(250, 300);
+    frame:SetPoint("center", UIParent, "center");
+    frame:SetFrameLevel(100);
 
-    EMT.title = EMT:CreateFontString(nil, "OVERLAY");
-    EMT.title:SetFontObject("GameFontNormal");
-    EMT.title:SetPoint("center", EMT.TitleBg, "center", 5, 0);
-    EMT.title:SetText("Edit Macro Targets");
+    frame.title = frame:CreateFontString(nil, "OVERLAY");
+    frame.title:SetFontObject("GameFontNormal");
+    frame.title:SetPoint("center", frame.TitleBg, "center", 5, 0);
+    frame.title:SetText("Edit Macro Targets");
 
-    EMT.saveButton = CreateFrame("Button", "saveButton", EMT, "EMT_ButtonTemplate");
-    EMT.saveButton:SetText("Save");
-    EMT.saveButton:SetScript("OnClick", function(self)
-        from = EMT.editTargetFrom:GetText();
-        to = EMT.editTargetTo:GetText();
-        EMT:UpdateMacro(from, to);
+    frame.saveButton = CreateFrame("Button", "saveButton", frame, "EMT_ButtonTemplate");
+    frame.saveButton:SetText("Save");
+    frame.saveButton:SetScript("OnClick", function()
+        local popup = StaticPopup_Show("EMT_CONFIRMATION_FOR_UPDATING_MACROS");
+        if (popup) then
+            popup.frame = frame;
+        end
     end)
 
-    EMT.editTargetFrom = CreateFrame("EditBox", "EMT_editTargetFrom", EMT, "EMT_EditBoxTemplate");
-    EMT.editTargetFrom.Label = EMT.editTargetFrom:CreateFontString(nil , "Background", "GameTooltipText");
-    EMT.editTargetFrom.Label:SetText("The target name to change from");
-    EMT.editTargetFrom.Label:SetPoint("left", EMT.editTargetFrom, "left", 0, 30);
+    frame.editTargetFrom = CreateFrame("EditBox", "BET_EditTargetFromEditBox", frame, "EMT_EditBoxTemplate");
+    frame.editTargetFrom.Label = frame.editTargetFrom:CreateFontString(nil , "Background", "GameFontNormal");
+    frame.editTargetFrom.Label:SetText("The target name to change from:");
+    frame.editTargetFrom.Label:SetPoint("left", frame.editTargetFrom, "left", 0, 30);
 
-    EMT.editTargetTo = CreateFrame("EditBox", "EMT_editTargetTo", EMT, "EMT_EditBoxTemplate");
-    EMT.editTargetTo:SetPoint("center", EMT,  "center", 0, -10);
-    EMT.editTargetTo.Label = EMT.editTargetTo:CreateFontString(nil , "Background", "GameTooltipText");
-    EMT.editTargetTo.Label:SetText("The target name to change to");
-    EMT.editTargetTo.Label:SetPoint("left", EMT.editTargetTo, "left", 0, 30);
+    frame.editTargetTo = CreateFrame("EditBox", "BET_TargetToEditBox", frame, "EMT_EditBoxTemplate");
+    frame.editTargetTo:SetPoint("center", frame,  "center", 0, -10);
+    frame.editTargetTo.Label = frame.editTargetTo:CreateFontString(nil , "Background", "GameFontNormal");
+    frame.editTargetTo.Label:SetText("The target name to change to:");
+    frame.editTargetTo.Label:SetPoint("left", frame.editTargetTo, "left", 0, 30);
+end
+
+function EMT:CreateInterfaceOptionsApp()
+    EMT.InterfaceOptionsApp = CreateFrame("frame", "EMT_InterfaceOptionsApp", EMT, "BackdropTemplate");
+	EMT.InterfaceOptionsApp.name = "EditMacroTargets";
+    EMT.InterfaceOptionsApp:Hide();
+    EMT:CreateChildFrames(EMT.InterfaceOptionsApp);
+	InterfaceOptions_AddCategory (EMT.InterfaceOptionsApp);
+end
+
+function EMT:AppSetup()
+    EMT.App:Hide();
+    EMT:CreateChildFrames(EMT.App);
+end
+
+function EMT:CreateDialogue()
+    StaticPopupDialogs["EMT_CONFIRMATION_FOR_UPDATING_MACROS"] = {
+        text = "This will modify all relevant macros, and cannot be undone. Are you sure you want to continue?",
+        button1 = "Okay",
+        button2 = "Cancel",
+        hideOnEscape = true,
+        OnAccept = function(self)
+            from = self.frame.editTargetFrom:GetText();
+            to = self.frame.editTargetTo:GetText();
+            EMT:UpdateMacro(from, to);
+        end
+    }
 end
 
 EMT:RegisterEvent("PLAYER_LOGIN", function()
-    HideUIPanel(EMT);
-    EMT:CreateChildFrames();
+    EMT:AppSetup();
+    EMT:CreateDialogue();
+    EMT:CreateInterfaceOptionsApp();
 end)
 
 EMT:RegisterEvent("PLAYER_REGEN_DISABLED", function()
@@ -108,35 +138,40 @@ EMT:RegisterEvent("PLAYER_REGEN_ENABLED", function()
 end)
 
 function EMT:ToggleDisplay()
-    if (EMT:IsVisible()) then
-        HideUIPanel(EMT);
+    if (EMT.App:IsVisible()) then
+        EMT.App:Hide();
     else
-        ShowUIPanel(EMT);
+        EMT.App:Show();
     end
 end
 
 SlashCmdList["EditMacroTargets"] = function(msg)
+    local command, rest = msg:match("^(%S*)%s*(.-)$");
+    local from, to, extra = strsplit(" ", msg, 3);
+
     if UnitIsDeadOrGhost("player") or EMT.locked then
-        EMT:Print("EMT is locked while player is dead or in combat.");
+        return EMT:Print("EMT is locked while player is dead or in combat.");
     end
 
     if msg == "" then
         EMT:ToggleDisplay();
+    elseif command == "help" then
+        print("help methods will go here");
     elseif from ~= "" and to ~= "" then
-        local from, to, extra = strsplit(" ", msg, 3);
-
-        if extra ~= "" then
-            EMT:Print(string.gsub("extra arguments entered: $", "$", extra));
-            EMT.editTargetFrom:SetText(from);
-            EMT.editTargetTo:SetText(to);
-    
-            ShowUIPanel(EMT);
+        if extra ~= "" and extra ~= nil then
+            EMT:Print(string.gsub("Extra arguments entered: $", "$", extra));
+            EMT.App.editTargetFrom:SetText(from);
+            EMT.App.editTargetTo:SetText(to);
+            EMT.App:Show();
         else
-            EMT:UpdateMacro(from, to);
+            EMT:Print("Double check your target names before saving!");
+            EMT.App.editTargetFrom:SetText(from);
+            EMT.App.editTargetTo:SetText(to);
+            EMT.App:Show();
         end
     else
-        EMT:Print("the target player name you are changing to is missing.");
-        EMT.editTargetFrom:SetText(from);
-        ShowUIPanel(EMT);
+        EMT:Print("The target player name you are changing to is missing.");
+        EMT.App.editTargetFrom:SetText(from);
+        EMT.App:Show();
     end
 end

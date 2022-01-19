@@ -52,8 +52,13 @@
 				self:Disable()
 			</OnLoad>
 			<OnUpdate>
-				input1 = EMT.editTargetFrom:GetText()
-				input2 = EMT.editTargetTo:GetText()
+				if EMT.App:IsVisible() then
+					input1 = EMT.App.editTargetFrom:GetText()
+					input2 = EMT.App.editTargetTo:GetText()
+				elseif EMT.InterfaceOptionsApp:IsVisible() then
+					input1 = EMT.InterfaceOptionsApp.editTargetFrom:GetText()
+					input2 = EMT.InterfaceOptionsApp.editTargetTo:GetText()
+				end
 
 				if input1 ~= ""  and input2 ~= "" then
 					self:Enable()
