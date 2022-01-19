@@ -72,7 +72,7 @@ function EMT:CreateChildFrames()
     EMT.title = EMT:CreateFontString(nil, "OVERLAY");
     EMT.title:SetFontObject("GameFontNormal");
     EMT.title:SetPoint("center", EMT.TitleBg, "center", 5, 0);
-    EMT.title:SetText("Bulk Edit Target Options");
+    EMT.title:SetText("Edit Macro Targets");
 
     EMT.saveButton = CreateFrame("Button", "saveButton", EMT, "EMT_ButtonTemplate");
     EMT.saveButton:SetText("Save");
