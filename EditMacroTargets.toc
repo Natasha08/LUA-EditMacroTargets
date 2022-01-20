@@ -4,7 +4,7 @@
 #  EditMacroTargets
 #  Originally by omadasala
 ## Notes: Update macros with the same target simultaneously
-## Version: 1.0
+## Version: 0.1.0
 #  --------------------
 
 Lib\LibOO-1.0\lib.xml

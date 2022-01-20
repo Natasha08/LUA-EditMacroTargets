@@ -8,7 +8,6 @@ SLASH_EditMacroTargets1, SLASH_EditMacroTargets2 = "/emt", "/editmacrotargets";
 -- configure help tips
 -- refactor/cleanup
 -- versioning and checking for updates
--- print how many macros have been modified
 
 local LibOO = LibStub("LibOO-1.0", true);
 local INITIAL_MACRO_INDEX = 1;
@@ -18,6 +17,7 @@ _G.EditMacroTargets = _G.EMT;
 local EMT = _G.EMT;
 EMT.App = App;
 EMT.locked = false;
+local macrosUpdated = 0;
 
 local function setTextColor(text, color)
     local textColor = color or "8000ffff";
@@ -47,13 +47,10 @@ function EMT:UpdateMacro(from, to, previousIndex)
     if body:find(at) or body:find(target) then
         macroText = string.gsub(body, from, to);
         EditMacro(currentIndex, name, nil, macroText);
+        macrosUpdated = macrosUpdated + 1;
     end
 
     local nextIndex = currentIndex + 1;
-
-    if previousIndex ~= nil then
-        nextIndex = previousIndex + 1;
-    end
 
     nextName, nextIcon, nextBody, nextIsLocal = GetMacroInfo(nextIndex);
 
@@ -61,7 +58,13 @@ function EMT:UpdateMacro(from, to, previousIndex)
         EMT:UpdateMacro(from, to, nextIndex);
     else
         EMT.App:Hide();
-        EMT:Print("Macros have been updated!");
+        local message = string.gsub("* macros have been updated!", "*", macrosUpdated);
+        if macrosUpdated == 1 then
+            message = "1 macro has been updated!";
+        end
+
+        EMT:Print(message);
+        macrosUpdated = 0;
     end
 end
 
@@ -159,7 +162,7 @@ SlashCmdList["EditMacroTargets"] = function(msg)
         print("help methods will go here");
     elseif from ~= "" and to ~= "" then
         if extra ~= "" and extra ~= nil then
-            EMT:Print(string.gsub("Extra arguments entered: $", "$", extra));
+            EMT:Print(string.gsub("Extra arguments entered: *", "*", extra));
             EMT.App.editTargetFrom:SetText(from);
             EMT.App.editTargetTo:SetText(to);
             EMT.App:Show();
