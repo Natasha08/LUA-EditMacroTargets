@@ -50,17 +50,15 @@
 			</OnEnable>
 			<OnLoad>
 				self:Disable()
+				app = EMT:VisibleApp()
 			</OnLoad>
 			<OnUpdate>
-				if EMT.App:IsVisible() then
-					input1 = EMT.App.editTargetFrom:GetText()
-					input2 = EMT.App.editTargetTo:GetText()
-				elseif EMT.InterfaceOptionsApp:IsVisible() then
-					input1 = EMT.InterfaceOptionsApp.editTargetFrom:GetText()
-					input2 = EMT.InterfaceOptionsApp.editTargetTo:GetText()
+				if app and app:IsVisible() then
+					input1 = app.editTargetFrom:GetText()
+					input2 = app.editTargetTo:GetText()
 				end
 
-				if input1 ~= ""  and input2 ~= "" then
+				if EMT:ValidateText(input1) and EMT:ValidateText(input2) then
 					self:Enable()
 				else
 					self:Disable()

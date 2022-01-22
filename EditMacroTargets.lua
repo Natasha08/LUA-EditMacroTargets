@@ -28,10 +28,6 @@ function EMT:Print(msg)
     return print(header .. msg);
 end
 
-function EMT:ValidateText(text)
-    return text ~= nil and text ~= "";
-end
-
 function EMT:UpdateMacro(from, to, previousIndex)
     if (MacroFrame ~= nil and MacroFrame:IsShown()) then MacroFrame:Hide();end
     if from == "" then EMT:Print("the target name you are changing to is missing.");end
@@ -66,6 +62,18 @@ function EMT:UpdateMacro(from, to, previousIndex)
         EMT:Print(message);
         macrosUpdated = 0;
     end
+end
+
+function EMT:VisibleApp()
+    if EMT.App:IsVisible() then
+        return EMT.App;
+    elseif EMT.InterfaceOptionsApp and EMT.InterfaceOptionsApp:IsVisible() then
+        return EMT.InterfaceOptionsApp;
+    end
+end
+
+function EMT:ValidateText(text)
+    return text ~= nil and text ~= "";
 end
 
 function EMT:CreateChildFrames(frame)
