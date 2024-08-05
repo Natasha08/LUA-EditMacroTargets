@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<EditBox name="EMT_EditBoxTemplate" enableMouse="true" virtual="true" autoFocus="false">
+    	<Anchors>
+			<Anchor point="center" relativeTo="EMT" relativePoint="center" y="50"/>
+		</Anchors>
+		<Size x="200" y="25"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="background" setAllPoints="true">
+					<Color r="0.5" g="0.4" b="0.3" a="1"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="OVERLAY">
+				<FontString parentKey="BackgroundText" justifyH="center" wordwrap="false" inherits="GameFontHighlightSmall">
+					<Color r="0.5" g="0.5" b="0.5"/>
+
+				</FontString>
+			</Layer>
+		</Layers>
+		<FontString inherits="GameFontHighlight"/>
+		<Scripts>
+			<OnEnterPressed>
+				self:ClearFocus()
+			</OnEnterPressed>
+		</Scripts>
+	</EditBox>
+
+	<Button name="EMT_ButtonTemplate" virtual="true">
+		<Size x="80" y="30"/>
+    	<Anchors>
+			<Anchor point="center" relativeTo="EMT" relativePoint="bottom" y="70"/>
+		</Anchors>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+		<DisabledTexture>
+			<Color r="0.15" g="0.15" b="0.15" a="0.5"/>
+		</DisabledTexture>
+		<NormalTexture>
+			<Color r="0.45" g="0.15" b="0.15" a="1"/>
+		</NormalTexture>
+
+		<Scripts>
+			<OnEnable>
+				self:SetAlpha(1)
+			</OnEnable>
+			<OnLoad>
+				self:Disable()
+				app = EMT:VisibleApp()
+			</OnLoad>
+			<OnUpdate>
+				if app and app:IsVisible() then
+					input1 = app.editTargetFrom:GetText()
+					input2 = app.editTargetTo:GetText()
+				end
+
+				if EMT:ValidateText(input1) and EMT:ValidateText(input2) then
+					self:Enable()
+				else
+					self:Disable()
+				end
+			</OnUpdate>
+			<OnDisable>
+				self:SetAlpha(0.8)
+			</OnDisable>
+		</Scripts>
+	</Button>
+</Ui>
